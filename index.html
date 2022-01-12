@@ -1,0 +1,156 @@
+<div></div>
+<div class="container" id="run-panel">
+
+                <div id="header-row" class="section">
+                    <div id="label"><!---->Preview<!----></div>
+                    
+                
+                        <div class="sub-label">
+                            <button type="button" onclick="init()">Camera</button>
+<div id="webcam-container"></div>
+<div   id="label-container"></div>
+                            
+                        </div>
+                   
+                
+            </div>
+
+
+<style>
+           
+                .sub-label{
+                    font-size: 15px;
+                    color: #999;
+                }
+
+                h4, tm-toggle {
+                    padding: 0;
+                    margin: 0 0 20px 0;
+                    font-weight: 500;
+                    font-size: 16px;
+                    color: #5F6368;
+                }
+
+                 #slot-container {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                } 
+
+                ::slotted(*) {
+                    align-items: center;
+                    justify-items: center;
+                    justify-content: center;
+                }
+
+                .action-btn{
+                    color: #fff;
+                    font-size: 14px;
+                    text-align: center;
+                    padding: 8px 25px 8px 15px;
+                    border-radius: 6px;
+                    background-color: #1A73E8;
+                    /* display: inline-block; */
+                    cursor: pointer;
+                    float: right;
+                }
+
+                .action-btn-icon{
+                    margin-right: 20px;
+                }
+
+                .bar-graph-holder{
+                    display: flex;
+                    margin-bottom: 12px;
+                    align-items: center;
+                    justify-content: space-between;
+                }
+
+                .bar-graph-holder:last-child{
+                    margin-bottom: 0;
+                }
+
+                .bar-graph-label{
+                    width: 20%;
+                    margin-right: 10px;
+                    color: #1967D2;
+                    font-weight: 400;
+                    font-size: 14px;
+                    text-overflow: ellipsis;
+                    overflow: hidden;
+                }
+
+                #section-output-icon{
+                    position: absolute;
+                    left: 50%;
+                    top: -10px;
+                    transform: translateX(-50%)
+                }
+
+                tm-bar-graph {
+                    width: 70%;
+                    border-radius: 5px;
+                }
+            </style>
+<link rel="stylesheet" href="css/style.css">
+<script src="js/tf.min.js"></script>
+<script src="js/teachablemachine-image.min.js"></script>
+<script type="text/javascript">
+    // More API functions here:
+    // https://github.com/googlecreativelab/teachablemachine-community/tree/master/libraries/image
+
+    // the link to your model provided by Teachable Machine export panel
+    const URL = "https://apps.rodrigofaustino.com.br/app/emocao/";
+
+    let model, webcam, labelContainer, maxPredictions;
+
+    // Load the image model and setup the webcam
+    async function init() {
+        const modelURL = URL + "modelo/model.json";
+        const metadataURL = URL + "modelo/metadata.json";
+        
+        
+        
+
+        // load the model and metadata
+        // Refer to tmImage.loadFromFiles() in the API to support files from a file picker
+        // or files from your local hard drive
+        // Note: the pose library adds "tmImage" object to your window (window.tmImage)
+        model = await tmImage.load(modelURL, metadataURL);
+        maxPredictions = model.getTotalClasses();
+
+        // Convenience function to setup a webcam
+        const flip = true; // whether to flip the webcam
+        webcam = new tmImage.Webcam(200, 200, flip); // width, height, flip
+        await webcam.setup(); // request access to the webcam
+        await webcam.play();
+        window.requestAnimationFrame(loop);
+
+        // append elements to the DOM
+        document.getElementById("webcam-container").appendChild(webcam.canvas);
+        labelContainer = document.getElementById("label-container");
+        for (let i = 0; i < maxPredictions; i++) { // and class labels
+            labelContainer.appendChild(document.createElement("div"));
+        }
+    }
+
+    async function loop() {
+        webcam.update(); // update the webcam frame
+        await predict();
+        window.requestAnimationFrame(loop);
+    }
+
+    // run the webcam image through the image model
+    async function predict() {
+        // predict can take in an image, video or canvas html element
+        const prediction = await model.predict(webcam.canvas);
+        for (let i = 0; i < maxPredictions; i++) {
+            const classPrediction =
+                prediction[i].className + ": "+ prediction[i].probability.toFixed(2);
+            labelContainer.childNodes[i].innerHTML =  classPrediction;
+        }
+    }
+    
+    
+</script>
+
