@@ -1,21 +1,26 @@
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8">
 <div></div>
 <div class="container" id="run-panel">
 
                 <div id="header-row" class="section">
-                    <div id="label"><!---->Preview<!----></div>
+                    <div id="label"><!---->Abrir camera<!----></div>
                     
                 
-                        <div class="sub-label">
+                       <div class="sub-label">
                             <button type="button" onclick="init()">Camera</button>
 <div id="webcam-container"></div>
-<div   id="label-container"></div>
+
+                       
+
                             
-                        </div>
-                   
-                
-            </div>
-
-
+                                    <div class="bar-graph-holder">
+                                        
+                                       <div   id="label-container"></div>
+                                       
+                                    </div>
+                               
+                        </div></div>
 <style>
            
                 .sub-label{
@@ -95,6 +100,7 @@
 <link rel="stylesheet" href="css/style.css">
 <script src="js/tf.min.js"></script>
 <script src="js/teachablemachine-image.min.js"></script>
+<script type="text/javascript" src="js/loader.js"></script>
 <script type="text/javascript">
     // More API functions here:
     // https://github.com/googlecreativelab/teachablemachine-community/tree/master/libraries/image
@@ -146,11 +152,14 @@
         const prediction = await model.predict(webcam.canvas);
         for (let i = 0; i < maxPredictions; i++) {
             const classPrediction =
-                prediction[i].className + ": "+ prediction[i].probability.toFixed(2);
-            labelContainer.childNodes[i].innerHTML =  classPrediction;
+        prediction[i].className + ": "+ prediction[i].probability.toFixed(2)+ "<input type='range' min='0' max='10' value='"+(prediction[i].probability.toFixed(2)*10)+"' class='slider'>";
+        
+        
+        
+        labelContainer.childNodes[i].innerHTML =  classPrediction;
+        
         }
     }
-    
-    
+   
 </script>
 
